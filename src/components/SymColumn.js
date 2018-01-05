@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import '../styles/App.css';
-// import { scaleLinear } from 'd3-scale';
-// import { axisRight } from 'd3-axis';
-// import { max } from 'd3-array';
-// import { select, selectAll } from 'd3-selection';
 import * as d3 from "d3v4";
+import GridFunctions from './GridFunctions';
 
-class DepthColumn extends Component {
+class SymColumn extends Component {
 	constructor(props) {
 		super(props);
 
@@ -32,55 +29,56 @@ class DepthColumn extends Component {
 		var depthDataUrl = 'http://localhost:3001/wells/well_data?well_num=1';
 
 		const node = this.node;
-		// const dataMax = max(this.props.data)
+
+		const ntry = { sym: 'steam',    shape: 'M0,-10 L10,0 L0,10 Z' };
+		const svy  = { sym: 'survey',   shape: 'M0,-2  L10,0 L0,2  L-10,0 Z'};
+		const trip = { sym: 'tripLine', shape: 'M0,-1  L10,-1 L10,1 L0,1 Z'};
 
 
-			var depthColumn = d3.select(node)
-				.append('svg')
-					.attr("height", this.state.columnHeight)
-					.attr('width', this.state.columnWidth)
-					.attr('x', 0)
-					.attr('y', 0)
-					.attr('class', 'col depthCol')
-					.attr('id', 'depth');
+		var symColumn = d3.select(node)
 
-			d3.json(depthDataUrl, d => {
+		let grid = new GridFunctions();
 
-				// let depthData = d['data'].attributes['depth-data']);
-				// console.log(d.data.attributes['depth-data']);
-				// const depthData = d.data.attributes["depth-data"]);
+		d3.json(depthDataUrl, d => {
 
-				var maxDepth = d3.max(d['data'].attributes['depth-data'], d => { return d.depth })
-				console.log(maxDepth)
+			const symbolData = d.data.attributes["well-symbols"];
 
-				const yScale = d3.scaleLinear()
-					.domain([0, maxDepth + 100])
-					.range([0, this.state.columnHeight]);
+			const maxDepth = d3.max(d['data'].attributes['depth-data'], d => { return d.depth })
+			// console.log(maxDepth)
 
-				// Write depth labels
-				// console.log('Lith Column width =', lithColDimension.width)
-				depthColumn.append('g')
-					.attr('class', 'depth-label')
-					.call(createYGridlines(yScale, 0, this.state.columnHeight))
-				.selectAll("text")
-					.attr("y", -this.state.columnWidth/2 )
-					.attr("x", 0)
-					.attr("transform", "rotate(90)")
-					.style("text-anchor", "middle");
+			const yScale = d3.scaleLinear()
+				.domain([0, maxDepth + 100])
+				.range([0, this.state.columnHeight]);
 
-				// Only show depth labels at 500 ft intervals and greater than 0.
-				d3.selectAll(".tick text")
-					.attr("visibility", function(d){ return (d % 500 === 0 && d > 0)  ?  "visible" : "hidden" })
+			// Add grid lines
+			grid.addHorizontalGridlines(symColumn, yScale, this.state.columnWidth, this.state.columnHeight)
 
+			// Emphasize tick lines at 500 ft and de-emphasize all others
+			d3.selectAll(".y-axis .tick line")
+				.attr("opacity",      function(d){ return (d % 500 === 0)  ?  "0.75" : ".25" })
+				.attr("stroke-width", function(d){ return (d % 500 === 0 ) ?  "1.00" : ".25" })
 
-			});
+			// Add steam entry symbol to page
+			symbolData.forEach(d => {
+				if(d.symbol === 'trip') {
+					this.addSymbol(symColumn, trip, d.depth, yScale)
+				}
+			})
+		});
 
-			function createYGridlines(yScale, tickSize, height){
-				return d3.axisRight(yScale)
-					.tickSize(tickSize)
-					.ticks(height/10);
-			}
+	}
 
+	addSymbol(svg, shapeData, depth, scale) {
+		svg.append('path')
+			.attr('d', shapeData.shape)
+			.attr('class', 'shape')
+		  .attr('transform', `translate(${0}, ${scale(depth)})scale(1.46)`)
+			.style("fill",  () => {
+				if      (shapeData.sym == 'steam')    { return 'red'}
+				else if (shapeData.sym == 'survey')   { return 'blue' }
+				else if (shapeData.sym == 'tripLine') { return 'red' }
+			})
+			.style('opacity', .6);
 	}
 
 	render() {
@@ -94,6 +92,6 @@ class DepthColumn extends Component {
 	}
 }
 
-export default DepthColumn;
+export default SymColumn;
 
 

@@ -53,22 +53,22 @@ class App extends Component {
 					</h2>
 				</div>
 				<div>
-					{/*<DepthColumn
-											data={this.state}
-											width={this.state.chartWidth}
-											height={this.state.chartHeight}
-										/>
-										<LithColumn
-											data={this.state}
-											width={this.state.chartWidth}
-											height={this.state.chartHeight}
-					/>*/}
+					<DepthColumn
+						data={this.state}
+						width={this.state.chartWidth}
+						height={this.state.chartHeight}
+					/>
+					<LithColumn
+						data={this.state}
+						width={this.state.chartWidth}
+						height={this.state.chartHeight}
+					/>
 					<MinColumn
 						data={this.state}
 						width={this.state.chartWidth}
 						height={this.state.chartHeight}
 					/>
-					{/*<SymColumn
+					<SymColumn
 						data={this.state}
 						width={this.state.chartWidth}
 						height={this.state.chartHeight}
@@ -82,7 +82,7 @@ class App extends Component {
 						data={this.state}
 						width={this.state.chartWidth}
 						height={this.state.chartHeight}
-					/>*/}
+					/>
 				</div>
 			</div>
 		);
