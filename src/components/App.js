@@ -54,14 +54,14 @@ class App extends Component {
 				</div>
 				<div>
 					<DepthColumn
-											data={this.state}
-											width={this.state.chartWidth}
-											height={this.state.chartHeight}
-										/>
-										<LithColumn
-											data={this.state}
-											width={this.state.chartWidth}
-											height={this.state.chartHeight}
+						data={this.state}
+						width={this.state.chartWidth}
+						height={this.state.chartHeight}
+					/>
+					<LithColumn
+						data={this.state}
+						width={this.state.chartWidth}
+						height={this.state.chartHeight}
 					/>
 					<MinColumn
 						data={this.state}
